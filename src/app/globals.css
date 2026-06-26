@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Paperlogy (TRD §8) ──────────────────────────────────────
+   /public/fonts/paperlogy/ 에 woff2 배치 시 자동 적용.
+   파일이 없으면 Pretendard/system 으로 안전하게 폴백된다. */
+@font-face {
+  font-family: "Paperlogy";
+  src: url("/fonts/paperlogy/Paperlogy-4Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperlogy";
+  src: url("/fonts/paperlogy/Paperlogy-6SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Paperlogy";
+  src: url("/fonts/paperlogy/Paperlogy-7Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: theme("colors.bg");
+  color: theme("colors.ink");
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: theme("fontFamily.sans");
+}
+
+/* 모바일 우선: 한손 조작 영역 + safe-area */
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: theme("colors.bg");
+  position: relative;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    max-width: 1024px;
+  }
+}

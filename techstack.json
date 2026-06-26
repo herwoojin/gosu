@@ -1,0 +1,80 @@
+{
+  "project": "우리동네고수 (Wooridongne Gosu)",
+  "description": "전국 편의점 본부 시설지원팀을 위한 입찰형(역경매) 협력사 매칭 모바일 PWA",
+  "lastUpdated": "2026-06-26",
+  "repo": "(local) /Users/heoujin/우리동네고수",
+  "architectureSummary": "Next.js 14 App Router 모바일 PWA. 인증은 Firebase Auth, 데이터는 데이터 어댑터(src/lib/data) 추상화 — 현재 mock(localStorage), 차후 Firebase Firestore/Storage로 교체 예정. 지도는 OpenStreetMap(Leaflet)으로 내 점포·근처 고수 표시 및 컨설팅(무료 AS/유료 출장) 호출. 웹훅/외부 API는 목업 계층(src/lib/data/webhook + /api/webhooks).",
+  "categories": [
+    {
+      "name": "프론트엔드",
+      "items": [
+        { "name": "Next.js", "version": "14.2.x", "purpose": "App Router 기반 모바일 우선 PWA 프레임워크", "config": "next.config.mjs" },
+        { "name": "React", "version": "18.3.x", "purpose": "UI 렌더링" },
+        { "name": "TypeScript", "version": "5.6.x", "purpose": "정적 타입(strict)", "config": "tsconfig.json" },
+        { "name": "Tailwind CSS", "version": "3.4.x", "purpose": "디자인 토큰화 스타일", "config": "tailwind.config.ts" },
+        { "name": "lucide-react", "version": "0.451.x", "purpose": "아이콘" },
+        { "name": "Leaflet + react-leaflet", "version": "1.9.x / 4.2.x", "purpose": "OpenStreetMap 지도 — 점포·근처 고수 표시, 위치 선택", "config": "src/components/map/*, next.config.mjs transpilePackages" },
+        { "name": "Paperlogy", "version": "self-host woff2", "purpose": "브랜드 폰트(미배치 시 Pretendard/system 폴백)", "config": "src/app/globals.css @font-face" }
+      ]
+    },
+    {
+      "name": "상태/데이터",
+      "items": [
+        { "name": "데이터 어댑터(DataProvider)", "purpose": "DB 접근 추상화 — 현재 mock(localStorage), 차후 Firebase 구현 교체", "config": "src/lib/data/{provider,mock,index}.ts" },
+        { "name": "웹훅/외부 API 목업", "purpose": "도메인 이벤트 발신 + 수신기(목업)", "config": "src/lib/data/webhook.ts, src/app/api/webhooks/route.ts" },
+        { "name": "지오 유틸(하버사인)", "purpose": "내 점포↔고수 거리 계산(실서비스 PostGIS 대체)", "config": "src/lib/geo.ts" },
+        { "name": "@tanstack/react-query", "version": "5.x", "purpose": "서버 상태 캐싱", "config": "src/components/Providers.tsx" },
+        { "name": "@supabase/supabase-js", "version": "2.x", "purpose": "Supabase 클라이언트(레거시 옵션, 현재 미사용)" },
+        { "name": "zod", "version": "3.x", "purpose": "입출력 스키마 검증" }
+      ]
+    },
+    {
+      "name": "인증",
+      "items": [
+        { "name": "Firebase Auth", "version": "10.x", "purpose": "Google + Email 로그인 (ID 토큰 → Supabase RLS)", "config": "src/lib/firebase.ts (동적 초기화)" }
+      ]
+    },
+    {
+      "name": "백엔드(데이터·매칭)",
+      "items": [
+        { "name": "Supabase Postgres + PostGIS", "purpose": "관계형 데이터 + 공종·지역 지오매칭 + RLS 행단위 인가" },
+        { "name": "Supabase Edge Functions (Deno)", "purpose": "verify-biz/match/toss-webhook/ai-quote/notify 서버 로직" },
+        { "name": "Supabase Storage", "purpose": "사진·자격증·견적서 파일(서명 URL)" }
+      ]
+    },
+    {
+      "name": "AI·외부 API",
+      "items": [
+        { "name": "OpenStreetMap 타일", "purpose": "지도 타일 (저작권 표기 의무 준수)", "config": "tile.openstreetmap.org, attribution 링크" },
+        { "name": "Nominatim (OSM)", "purpose": "주소→좌표 지오코딩(점포 등록, 베스트 에포트)", "config": "src/app/owner/store/page.tsx" },
+        { "name": "Anthropic Claude API", "purpose": "AI 견적서 양식 생성(서버 프록시, 키 클라 미노출)" },
+        { "name": "국세청 사업자진위확인 (data.go.kr)", "purpose": "협력사 등록 진위·상태 확인" },
+        { "name": "도로명주소 API (행안부/카카오)", "purpose": "주소→좌표 변환, 시군구 매핑" },
+        { "name": "토스페이먼츠", "purpose": "즉시결제·에스크로" },
+        { "name": "오피넷", "purpose": "유가·표준단가 참고치" }
+      ]
+    },
+    {
+      "name": "알림",
+      "items": [
+        { "name": "Firebase Cloud Messaging", "purpose": "웹푸시(PWA) — 매칭/입찰/낙찰/정산" },
+        { "name": "카카오 알림톡(옵션)", "purpose": "협력사 대상 알림" }
+      ]
+    },
+    {
+      "name": "운영 가시성(Observability)",
+      "items": [
+        { "name": "서버 용량 신호등(배터리)", "purpose": "우측 하단 고정 배터리 + /api/server-health 폴링(30s)", "config": "src/components/ServerBattery.tsx, src/app/api/server-health/route.ts" }
+      ]
+    },
+    {
+      "name": "PWA·배포",
+      "items": [
+        { "name": "Service Worker", "purpose": "앱셸 캐시 + 오프라인 폴백", "config": "public/sw.js" },
+        { "name": "Web App Manifest", "purpose": "설치형 PWA 메타", "config": "public/manifest.webmanifest" },
+        { "name": "PWABuilder", "purpose": "배포 URL → Android APK/AAB 생성" },
+        { "name": "Vercel / Netlify", "purpose": "호스팅(예정)" }
+      ]
+    }
+  ]
+}
