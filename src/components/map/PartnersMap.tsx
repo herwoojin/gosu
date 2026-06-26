@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -21,7 +21,8 @@ function pin(color: string, label: string) {
   });
 }
 
-function FitBounds({ points }: { points: LatLng[] }) {
+// 모든 지점이 보이도록 지도 범위를 맞춘다. fitKey 가 바뀌면 다시 맞춘다.
+function FitBounds({ points, fitKey }: { points: LatLng[]; fitKey: number }) {
   const map = useMap();
   useEffect(() => {
     if (points.length === 0) return;
@@ -31,9 +32,22 @@ function FitBounds({ points }: { points: LatLng[] }) {
     }
     const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
-  }, [map, points]);
+  }, [map, points, fitKey]);
   return null;
 }
+
+// 컨테이너 높이가 바뀌면 Leaflet 에 알려 타일/마커 위치를 다시 계산한다.
+function ResizeOnHeight({ height }: { height: number }) {
+  const map = useMap();
+  useEffect(() => {
+    const t = setTimeout(() => map.invalidateSize(), 220); // 높이 전환 애니메이션 후
+    return () => clearTimeout(t);
+  }, [map, height]);
+  return null;
+}
+
+const COLLAPSED_H = 320;
+const EXPANDED_H = 560;
 
 export default function PartnersMap({
   store,
@@ -53,12 +67,26 @@ export default function PartnersMap({
     [store, partners]
   );
 
+  const [expanded, setExpanded] = useState(false);
+  const [fitKey, setFitKey] = useState(0);
+  const height = expanded ? EXPANDED_H : COLLAPSED_H;
+
+  // 높이가 바뀌면 전체가 다시 잘 보이도록 범위를 한 번 더 맞춘다.
+  const prevExpanded = useRef(expanded);
+  useEffect(() => {
+    if (prevExpanded.current !== expanded) {
+      prevExpanded.current = expanded;
+      const t = setTimeout(() => setFitKey((k) => k + 1), 240);
+      return () => clearTimeout(t);
+    }
+  }, [expanded]);
+
   return (
-    <div className="overflow-hidden rounded-2xl shadow-card" style={{ height: 320 }}>
+    <div className="relative overflow-hidden rounded-2xl shadow-card transition-[height] duration-200 ease-out" style={{ height }}>
       <MapContainer
         center={[store.lat, store.lng]}
         zoom={14}
-        scrollWheelZoom={false}
+        scrollWheelZoom
         style={{ height: "100%", width: "100%" }}
       >
         {/* OpenStreetMap 표준 타일 + 저작권 표기 의무 준수 */}
@@ -67,7 +95,8 @@ export default function PartnersMap({
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
         />
-        <FitBounds points={points} />
+        <FitBounds points={points} fitKey={fitKey} />
+        <ResizeOnHeight height={height} />
 
         <Marker position={[store.lat, store.lng]} icon={pin("#2563EB", "내 점포")}>
           <Popup>{storeName}</Popup>
@@ -88,6 +117,26 @@ export default function PartnersMap({
           </Marker>
         ))}
       </MapContainer>
+
+      {/* 우상단 컨트롤: 전체 보기 + 높이 확장/축소 */}
+      <div className="absolute right-3 top-3 z-[1000] flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => setFitKey((k) => k + 1)}
+          className="rounded-lg bg-white/95 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-card backdrop-blur hover:bg-white"
+          title="전체 지도 보기"
+        >
+          전체 보기
+        </button>
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="rounded-lg bg-white/95 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-card backdrop-blur hover:bg-white"
+          title={expanded ? "지도 축소" : "지도 확대"}
+        >
+          {expanded ? "▲ 축소" : "▼ 확대"}
+        </button>
+      </div>
     </div>
   );
 }
