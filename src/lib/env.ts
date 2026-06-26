@@ -18,5 +18,8 @@ export const hasFirebase =
 
 export const hasSupabase = !!supabaseConfig.url && !!supabaseConfig.anonKey;
 
+// 공공데이터(소상공인 상가정보 등) 서비스키 — 서버 전용. 미설정 시 상권 지도는 데모 핀.
+export const hasPublicData = !!process.env.DATA_GO_KR_API_KEY;
+
 // 데모 모드: 외부 인증/DB 미설정 시 mock 데이터로 전 화면 동작
 export const isDemoMode = !hasFirebase || !hasSupabase;

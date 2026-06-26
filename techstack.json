@@ -3,7 +3,7 @@
   "description": "전국 편의점 본부 시설지원팀을 위한 입찰형(역경매) 협력사 매칭 모바일 PWA",
   "lastUpdated": "2026-06-26",
   "repo": "(local) /Users/heoujin/우리동네고수",
-  "architectureSummary": "Next.js 14 App Router 모바일 PWA. 인증은 Firebase Auth, 데이터는 데이터 어댑터(src/lib/data) 추상화 — 현재 mock(localStorage), 차후 Firebase Firestore/Storage로 교체 예정. 지도는 OpenStreetMap(Leaflet)으로 내 점포·근처 고수 표시 및 컨설팅(무료 AS/유료 출장) 호출. 웹훅/외부 API는 목업 계층(src/lib/data/webhook + /api/webhooks).",
+  "architectureSummary": "Next.js 14 App Router 모바일 PWA. 인증은 Firebase Auth, 데이터는 데이터 어댑터(src/lib/data) 추상화 — 현재 mock(localStorage), 차후 Firebase Firestore/Storage로 교체 예정. 지도는 OpenStreetMap(Leaflet)으로 내 점포·근처 고수 표시 및 컨설팅(무료 AS/유료 출장) 호출. 상권 지도(/owner/market)는 소상공인시장진흥공단 상가정보 API를 서버 프록시(/api/public/shops)로 받아 업종·주소별 색상 핀으로 표기(키 미설정 시 데모 핀). 웹훅/외부 API는 목업 계층(src/lib/data/webhook + /api/webhooks).",
   "categories": [
     {
       "name": "프론트엔드",
@@ -47,6 +47,8 @@
       "items": [
         { "name": "OpenStreetMap 타일", "purpose": "지도 타일 (저작권 표기 의무 준수)", "config": "tile.openstreetmap.org, attribution 링크" },
         { "name": "Nominatim (OSM)", "purpose": "주소→좌표 지오코딩(점포 등록, 베스트 에포트)", "config": "src/app/owner/store/page.tsx" },
+        { "name": "소상공인시장진흥공단 상가(상권)정보 API", "purpose": "반경내 상가업소 조회(/storeListInRadius) → 상권 지도에 업종·주소별 핀 표기", "config": "서버 프록시 src/app/api/public/shops/route.ts, 키 DATA_GO_KR_API_KEY (서버 전용)" },
+        { "name": "국토교통부 키스콘 건설업체정보 API", "purpose": "건설업체 등록/행정처분 등 조회(좌표 없음 → 보조 레이어, 검색 필터 필요)", "config": "data.go.kr/1613000/ConAdminInfoSvc1, 키 DATA_GO_KR_API_KEY 공용" },
         { "name": "Anthropic Claude API", "purpose": "AI 견적서 양식 생성(서버 프록시, 키 클라 미노출)" },
         { "name": "국세청 사업자진위확인 (data.go.kr)", "purpose": "협력사 등록 진위·상태 확인" },
         { "name": "도로명주소 API (행안부/카카오)", "purpose": "주소→좌표 변환, 시군구 매핑" },

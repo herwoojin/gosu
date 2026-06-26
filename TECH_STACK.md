@@ -14,6 +14,7 @@
                                 ├─ Edge Functions (verify-biz / match / toss-webhook / ai-quote / notify)
                                 └─ Storage (사진/자격증/견적서)
 외부: 국세청 진위확인 · 도로명주소 · 토스페이먼츠 · FCM · 카카오 알림톡 · 오피넷 · Claude API
+      · 소상공인 상가정보(data.go.kr) · 키스콘 건설업체(data.go.kr)
 ```
 
 > **데모 모드:** `NEXT_PUBLIC_FIREBASE_*` / `NEXT_PUBLIC_SUPABASE_*` 가 비어 있으면
@@ -25,7 +26,9 @@
 |---|---|---|---|---|
 | 프론트 | Next.js | 14.2.x | App Router PWA | `next.config.mjs` |
 | 프론트 | React / TypeScript | 18.3 / 5.6 | UI / 타입(strict) | `tsconfig.json` |
-| 지도 | Leaflet + react-leaflet | 1.9 / 4.2 | OSM 점포·근처 고수 지도, 위치 선택 | `src/components/map/*` |
+| 지도 | Leaflet + react-leaflet | 1.9 / 4.2 | OSM 점포·근처 고수·상권 지도, 위치 선택 | `src/components/map/*` |
+| 공공데이터 | 소상공인 상가정보 API | — | 반경내 상가업소 → 업종·주소별 핀(`/owner/market`) | 서버 프록시 `src/app/api/public/shops/route.ts` |
+| 공공데이터 | 키스콘 건설업체 API | — | 건설업체 등록/처분(좌표 없음, 보조) | `data.go.kr/1613000/ConAdminInfoSvc1` |
 | 데이터 | 데이터 어댑터(DataProvider) | — | DB 추상화(mock→Firebase 교체) | `src/lib/data/*` |
 | 연동 | 웹훅/외부 API 목업 | — | 이벤트 발신·수신기 | `src/lib/data/webhook.ts`, `/api/webhooks` |
 | 지오 | 하버사인 거리 | — | 점포↔고수 거리(PostGIS 대체) | `src/lib/geo.ts` |
@@ -57,6 +60,7 @@
 | 토스페이먼츠 | 거래 수수료 | 즉시결제만, 본부결제는 PG 미경유 |
 | Claude API | 토큰 과금 | AI 견적서 호출 시 |
 | 국세청/오피넷/도로명 | 공공데이터 무료 | 호출 한도 존재 |
+| 소상공인 상가정보 / 키스콘 | 공공데이터 무료 | 일 10,000건 한도, 키 `DATA_GO_KR_API_KEY` 공용 |
 
 ## 5. 컨설팅 + 지도 기능 (2026-06-26 추가)
 
@@ -65,9 +69,18 @@
 - **컨설팅 2종(양방향 선택):** 협력사가 `/partner/consulting`에서 무료 AS / 유료 출장(요금) 제공 여부 설정 → 경영주는 `/owner/nearby`에서 협력사가 제공하는 모드만 골라 요청. 상태 전이: requested→accepted→scheduled→completed / declined.
 - **웹훅:** 컨설팅·점포 이벤트 발생 시 `emitWebhook` → `/api/webhooks`(목업 수신·콘솔 로그). localStorage에 최근 50건 로그 적재.
 
-## 6. 알려진 한계 (현재 빌드)
+## 6. 상권 지도 — 업종·주소별 핀 (2026-06-26 추가)
+
+- **`/owner/market`:** 내 점포 좌표 기준 **소상공인 상가정보 API(`/storeListInRadius`)** 를 서버 프록시(`/api/public/shops`)로 호출 → 상가업소를 **상권업종 대분류별 색상 핀(CircleMarker)** 으로 지도에 표기. 팝업에 상호·업종(소분류)·도로명주소 노출.
+- **필터/범례:** 결과에서 대분류를 집계해 색상 칩으로 표시, 탭하면 해당 업종만 on/off. 반경 500m/1km/2km 선택.
+- **키 보안:** 서비스키(Decoding)는 `DATA_GO_KR_API_KEY`(서버 전용)로만 사용, 클라이언트 미노출. 키 미설정 시 좌표 주변 **데모 핀**으로 동작(데모 모드 일관성).
+- **색상 매핑:** `src/lib/publicData.ts`의 `LCLS_COLORS`(음식·소매·생활서비스·교육·부동산·숙박·관광/여가/오락·스포츠 등) + 미지정 분류 해시 폴백.
+
+## 7. 알려진 한계 (현재 빌드)
 
 - 데이터는 **mock(localStorage)** — 브라우저별 로컬 저장. Firebase Firestore/Storage 연동은 어댑터 `firebase.ts` 구현 후 활성 예정.
 - Nominatim 지오코딩은 무료 공개 서비스로 **rate limit** 존재 → 실패 시 지도 클릭으로 직접 지정(폴백 내장).
 - 결제·FCM·진위확인·AI 견적서는 **UI/플로우만** 동작(실 API 미연동).
 - Paperlogy woff2 미배치 → 폴백 폰트 렌더(라이선스 확인 후 `public/fonts/paperlogy/`에 배치).
+- **키스콘 건설업체 API**는 좌표를 제공하지 않고 검색 필터 없이는 결과가 비어(`totalCount 0`) 현재 지도 핀 미연동 — 활용가이드 확인 후 검색 파라미터·지오코딩(카카오) 추가 시 보조 레이어로 확장 가능.
+- 소상공인 API `radius`는 **최대 2km**, 1회 `numOfRows` 상한 존재 → 넓은 영역은 페이지네이션 필요(현재 200건/반경 단위).

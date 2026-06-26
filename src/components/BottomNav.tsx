@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { Home, FileText, Gavel, User, LayoutDashboard, CheckSquare, BarChart3, Briefcase, MapPin, HeartHandshake } from "lucide-react";
+import { Home, FileText, Gavel, User, LayoutDashboard, CheckSquare, BarChart3, Briefcase, MapPin, HeartHandshake, Map } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
@@ -12,6 +12,7 @@ const NAV: Record<string, Item[]> = {
   OWNER: [
     { href: "/owner", label: "홈", icon: Home },
     { href: "/owner/nearby", label: "근처 고수", icon: MapPin },
+    { href: "/owner/market", label: "상권지도", icon: Map },
     { href: "/owner/new", label: "견적요청", icon: Gavel },
     { href: "/owner/requests", label: "내 요청", icon: FileText },
     { href: "/profile", label: "내정보", icon: User },
