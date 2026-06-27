@@ -18,11 +18,18 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState | null>(null);
 
+// 데모/MVP: 실로그인 사용자도 모든 역할을 보유해 프로필에서 자유롭게 전환 가능.
+// (실서비스 전환 시 서버 권한/RLS로 역할 부여를 제한해야 함)
+const ALL_ROLES: Role[] = ["OWNER", "PARTNER", "MENTOR", "LGU", "WORKER_GLOBAL", "ADMIN", "SUPER_ADMIN"];
+
 const ROLE_LABEL: Record<Role, string> = {
   OWNER: "김점주 (경영주)",
   PARTNER: "이고수 (협력사)",
   ADMIN: "박과장 (본부 관리자)",
   SUPER_ADMIN: "슈퍼관리자",
+  MENTOR: "박목수 (멘토)",
+  LGU: "강진군 담당자 (지자체)",
+  WORKER_GLOBAL: "Nguyen (글로벌 워커)",
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -54,12 +61,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { onAuthStateChanged } = await import("firebase/auth");
         unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
           if (firebaseUser) {
+            // 기존에 저장된 activeRole이 있으면 유지(역할 전환 보존)
+            let prevRole: Role = "OWNER";
+            try {
+              const raw = localStorage.getItem(STORAGE_KEY);
+              if (raw) prevRole = (JSON.parse(raw) as AppUser).activeRole ?? "OWNER";
+            } catch { /* ignore */ }
             const appUser: AppUser = {
               uid: firebaseUser.uid,
               email: firebaseUser.email ?? "",
               displayName: firebaseUser.displayName ?? "사용자",
-              roles: ["OWNER"],
-              activeRole: "OWNER",
+              roles: ALL_ROLES,
+              activeRole: prevRole,
             };
             setUser(appUser);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appUser));
@@ -83,9 +96,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInDemo = useCallback(
     (role: Role) => {
-      // SUPER_ADMIN은 ADMIN 권한도 포함, OWNER는 기본 PARTNER 신청 가능
+      // SUPER_ADMIN은 ADMIN 권한도 포함, MENTOR는 협력사(고수) 활동도 가능
       const roles: Role[] =
-        role === "SUPER_ADMIN" ? ["SUPER_ADMIN", "ADMIN", "OWNER"] : [role];
+        role === "SUPER_ADMIN"
+          ? ["SUPER_ADMIN", "ADMIN", "OWNER"]
+          : role === "MENTOR"
+            ? ["MENTOR", "PARTNER"]
+            : [role];
       persist({
         uid: `demo-${role.toLowerCase()}`,
         email: `${role.toLowerCase()}@demo.wooridongne.kr`,
@@ -124,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           uid: cred.user.uid,
           email: cred.user.email ?? "",
           displayName: cred.user.displayName ?? "사용자",
-          roles: ["OWNER"],
+          roles: ALL_ROLES,
           activeRole: "OWNER",
         });
       } catch (popupError: unknown) {
@@ -202,6 +219,12 @@ export function roleHome(role: Role): string {
     case "ADMIN":
     case "SUPER_ADMIN":
       return "/admin";
+    case "MENTOR":
+      return "/mentor";
+    case "LGU":
+      return "/lgu";
+    case "WORKER_GLOBAL":
+      return "/global";
     default:
       return "/owner";
   }

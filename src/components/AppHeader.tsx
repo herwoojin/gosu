@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, Sparkles } from "lucide-react";
 
 const ROLE_BADGE: Record<string, string> = {
   OWNER: "경영주",
   PARTNER: "협력사",
   ADMIN: "관리자",
   SUPER_ADMIN: "슈퍼관리자",
+  MENTOR: "멘토",
+  LGU: "지자체",
+  WORKER_GLOBAL: "글로벌워커",
 };
 
 export function AppHeader({ title }: { title: string }) {
@@ -22,6 +25,9 @@ export function AppHeader({ title }: { title: string }) {
       </Link>
       <div className="flex items-center gap-2">
         {user && <Badge tone="primary">{ROLE_BADGE[user.activeRole]}</Badge>}
+        <Link href="/discover" aria-label="고수+ 디스커버리" className="rounded-lg p-2 hover:bg-slate-100">
+          <Sparkles className="h-5 w-5 text-primary" />
+        </Link>
         <Link href="/notifications" aria-label="알림" className="rounded-lg p-2 hover:bg-slate-100">
           <Bell className="h-5 w-5 text-muted" />
         </Link>

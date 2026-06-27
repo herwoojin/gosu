@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Card, Badge, Button, Input, Textarea } from "@/components/ui";
+import { DiscoverBanner } from "@/components/DiscoverBanner";
 import { demoRequests, categoryById } from "@/lib/demo-data";
 import { formatKRW, timeAgo } from "@/lib/utils";
-import { MapPin, Clock, Send, Check } from "lucide-react";
+import { MapPin, Clock, Send, Check, Globe, ChevronRight } from "lucide-react";
 
 const URGENCY: Record<string, { label: string; tone: "danger" | "warn" | "neutral" }> = {
   now: { label: "지금 바로", tone: "danger" },
@@ -28,8 +30,23 @@ export default function PartnerHome() {
   };
 
   return (
-    <AppShell title="협력사" allow={["PARTNER"]}>
-      <div className="mt-3 flex items-center justify-between px-1">
+    <AppShell title="협력사" allow={["PARTNER", "MENTOR"]}>
+      <DiscoverBanner />
+
+      <Link href="/global">
+        <Card className="mt-3 flex items-center gap-3 transition hover:ring-2 hover:ring-primary/30">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
+            <Globe className="h-6 w-6" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-bold text-ink">글로벌 인재 찾기</div>
+            <div className="truncate text-xs text-muted">입국 전 합법 사전 매칭 — 외국인 근로자 후보 보기</div>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-muted" />
+        </Card>
+      </Link>
+
+      <div className="mt-5 flex items-center justify-between px-1">
         <h2 className="text-lg font-bold text-ink">내 공종·지역 매칭 일감</h2>
         <Badge tone="primary">{demoRequests.length}건</Badge>
       </div>

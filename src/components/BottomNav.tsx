@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { Home, FileText, Gavel, User, LayoutDashboard, CheckSquare, BarChart3, Briefcase, MapPin, HeartHandshake, Map } from "lucide-react";
+import { Home, FileText, Gavel, User, LayoutDashboard, CheckSquare, BarChart3, Briefcase, MapPin, HeartHandshake, Map, Sparkles, GraduationCap, Building2, Globe, Bus } from "lucide-react";
 
 type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
@@ -20,14 +20,34 @@ const NAV: Record<string, Item[]> = {
   PARTNER: [
     { href: "/partner", label: "일감", icon: Briefcase },
     { href: "/partner/bids", label: "내 입찰", icon: Gavel },
+    { href: "/discover", label: "고수+", icon: Sparkles },
     { href: "/partner/consulting", label: "컨설팅", icon: HeartHandshake },
     { href: "/partner/profile", label: "프로필", icon: User },
   ],
   ADMIN: [
     { href: "/admin", label: "대시보드", icon: LayoutDashboard },
     { href: "/admin/partners", label: "협력사 승인", icon: CheckSquare },
+    { href: "/discover", label: "고수+", icon: Sparkles },
     { href: "/admin/pricing", label: "단가", icon: BarChart3 },
     { href: "/profile", label: "내정보", icon: User },
+  ],
+  MENTOR: [
+    { href: "/mentor", label: "내 코스", icon: GraduationCap },
+    { href: "/camp", label: "캠프", icon: Building2 },
+    { href: "/discover", label: "고수+", icon: Sparkles },
+    { href: "/me", label: "프로필", icon: User },
+  ],
+  LGU: [
+    { href: "/lgu", label: "협약관리", icon: Building2 },
+    { href: "/relocate", label: "이주", icon: Bus },
+    { href: "/discover", label: "고수+", icon: Sparkles },
+    { href: "/profile", label: "내정보", icon: User },
+  ],
+  WORKER_GLOBAL: [
+    { href: "/global", label: "글로벌", icon: Globe },
+    { href: "/relocate", label: "이주", icon: Bus },
+    { href: "/camp", label: "캠프", icon: GraduationCap },
+    { href: "/me", label: "프로필", icon: User },
   ],
 };
 

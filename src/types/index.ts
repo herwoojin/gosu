@@ -1,6 +1,14 @@
 // ERD(erd.md) 기반 도메인 타입. RLS/PostGIS는 백엔드, 여기선 클라 모델만.
 
-export type Role = "OWNER" | "PARTNER" | "ADMIN" | "SUPER_ADMIN";
+// Phase 2: MENTOR(강사/멘토), LGU(지자체), WORKER_GLOBAL(외국인 노동자) 추가
+export type Role =
+  | "OWNER"
+  | "PARTNER"
+  | "ADMIN"
+  | "SUPER_ADMIN"
+  | "MENTOR"
+  | "LGU"
+  | "WORKER_GLOBAL";
 
 export type RequestStatus =
   | "draft"

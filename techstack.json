@@ -1,9 +1,9 @@
 {
   "project": "우리동네고수 (Wooridongne Gosu)",
   "description": "전국 편의점 본부 시설지원팀을 위한 입찰형(역경매) 협력사 매칭 모바일 PWA",
-  "lastUpdated": "2026-06-26",
+  "lastUpdated": "2026-06-27",
   "repo": "(local) /Users/heoujin/우리동네고수",
-  "architectureSummary": "Next.js 14 App Router 모바일 PWA. 인증은 Firebase Auth, 데이터는 데이터 어댑터(src/lib/data) 추상화 — 현재 mock(localStorage), 차후 Firebase Firestore/Storage로 교체 예정. 지도는 OpenStreetMap(Leaflet)으로 내 점포·근처 고수 표시 및 컨설팅(무료 AS/유료 출장) 호출. 상권 지도(/owner/market)는 소상공인시장진흥공단 상가정보 API를 서버 프록시(/api/public/shops)로 받아 업종·주소별 색상 핀으로 표기(키 미설정 시 데모 핀). 웹훅/외부 API는 목업 계층(src/lib/data/webhook + /api/webhooks).",
+  "architectureSummary": "Next.js 14 App Router 모바일 PWA. 인증은 Firebase Auth, 데이터는 데이터 어댑터(src/lib/data, Phase2는 src/lib/phase2) 추상화 — 현재 mock(localStorage), 차후 Firebase/Supabase로 교체 예정. 지도는 OpenStreetMap(Leaflet)으로 내 점포·근처 고수 표시 및 컨설팅 호출. 상권 지도(/owner/market)는 소상공인시장진흥공단 상가정보 API를 서버 프록시(/api/public/shops)로 받아 업종·주소별 색상 핀으로 표기. Phase 2(휴먼 리소스 디스커버리)로 N잡러 프로필·위치추천·신뢰점수/단가·캠프·1인커머스·마케팅자동화·오프라인거점·지방이주/바우처·글로벌워커 모듈(M1~M9)과 신규 역할(MENTOR/LGU/WORKER_GLOBAL)을 데모 동작으로 추가(/discover 허브). 웹훅/외부 API는 목업 계층.",
   "categories": [
     {
       "name": "프론트엔드",
@@ -15,6 +15,22 @@
         { "name": "lucide-react", "version": "0.451.x", "purpose": "아이콘" },
         { "name": "Leaflet + react-leaflet", "version": "1.9.x / 4.2.x", "purpose": "OpenStreetMap 지도 — 점포·근처 고수 표시, 위치 선택", "config": "src/components/map/*, next.config.mjs transpilePackages" },
         { "name": "Paperlogy", "version": "self-host woff2", "purpose": "브랜드 폰트(미배치 시 Pretendard/system 폴백)", "config": "src/app/globals.css @font-face" }
+      ]
+    },
+    {
+      "name": "Phase 2 — 휴먼 리소스 디스커버리(M1~M9)",
+      "items": [
+        { "name": "Phase2 데이터 어댑터(phase2db)", "purpose": "스킬·코스·점수·바우처·커머스·SNS·거점·글로벌 mock(localStorage) CRUD", "config": "src/lib/phase2/index.ts" },
+        { "name": "점수·단가 엔진(M3)", "purpose": "신뢰/친절/다시만나요 → 종합·등급·단가배수(베이지안 평활)", "config": "src/lib/phase2/engines.ts" },
+        { "name": "위치기반 추천 엔진(M9)", "purpose": "강점×근처수요(할 일) + 희망×인근코스(배울 것) + 평균수익(벌이)", "config": "src/lib/phase2/engines.ts, src/app/me/recommend" },
+        { "name": "N잡러 프로필/스킬(M1)", "purpose": "잘하는/배우고싶은 분야·숙련도, 분야별 수익 대시보드", "config": "src/app/me, src/app/me/skills" },
+        { "name": "고수되기 캠프(M2)", "purpose": "코스·기수·수강·수료(민간 수료증)·멘토 개설", "config": "src/app/camp, src/app/camp/[courseId], src/app/mentor" },
+        { "name": "1인 커머스(M5)", "purpose": "개인 브랜드 상점·상품, 식품 영업신고 검증 게이트", "config": "src/app/shop" },
+        { "name": "마케팅 자동화(M6)", "purpose": "인스타/유튜브 예약발행 큐·뒷광고 자동표시(데모)", "config": "src/app/marketing" },
+        { "name": "오프라인 거점(M7)", "purpose": "공실→교육·커뮤니티·판매 거점 등록/매칭", "config": "src/app/venues" },
+        { "name": "지방 이주·바우처(M4)", "purpose": "지자체 협약·주거/교통 보조·온누리상품권(자금 미보관)", "config": "src/app/relocate, src/app/lgu" },
+        { "name": "글로벌 워커 매칭(M8)", "purpose": "입국 전 합법 사전 매칭·비자/EPS 안내·i18n(한/영)", "config": "src/app/global" },
+        { "name": "디스커버리 허브 + 신규 역할", "purpose": "/discover 진입점, MENTOR/LGU/WORKER_GLOBAL 역할·네비", "config": "src/app/discover, src/components/BottomNav.tsx" }
       ]
     },
     {

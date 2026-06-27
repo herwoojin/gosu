@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Card, SectionTitle, Badge, LinkButton } from "@/components/ui";
+import { DiscoverBanner } from "@/components/DiscoverBanner";
 import { categories, demoRequests, categoryById } from "@/lib/demo-data";
 import { timeAgo } from "@/lib/utils";
 import * as Icons from "lucide-react";
@@ -22,6 +23,8 @@ export default function OwnerHome() {
           <Icons.Plus className="h-5 w-5" /> 견적요청 시작
         </LinkButton>
       </div>
+
+      <DiscoverBanner />
 
       <div className="mt-3 grid grid-cols-2 gap-3">
         <Link href="/owner/nearby">

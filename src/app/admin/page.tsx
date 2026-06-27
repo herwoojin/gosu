@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui";
+import { DiscoverBanner } from "@/components/DiscoverBanner";
 import { useAuth } from "@/lib/auth";
 import { demoPartners, demoRequests } from "@/lib/demo-data";
 import { CheckSquare, Building2, BarChart3, AlertTriangle, ShieldCheck, Users } from "lucide-react";
@@ -35,6 +36,8 @@ export default function AdminDashboard() {
           </Card>
         ))}
       </div>
+
+      <DiscoverBanner />
 
       <h2 className="mb-3 mt-6 px-1 text-lg font-bold text-ink">업무</h2>
       <div className="grid grid-cols-2 gap-3">

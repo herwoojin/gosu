@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth, roleHome } from "@/lib/auth";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
+import { LoadingScreen } from "./LoadingScreen";
 import type { Role } from "@/types";
 
 // 인증 + 역할 가드. allow 미지정 시 로그인만 요구.
@@ -32,9 +33,7 @@ export function AppShell({
   }, [user, loading, allow, router]);
 
   if (loading || !user) {
-    return (
-      <div className="flex min-h-[60dvh] items-center justify-center text-muted">불러오는 중…</div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

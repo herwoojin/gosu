@@ -1,5 +1,5 @@
 // 최소 서비스 워커: 앱셸 캐시 + 오프라인 폴백 (TRD §7)
-const CACHE = "wdg-v1";
+const CACHE = "wdg-v2";
 const APP_SHELL = ["/", "/offline", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {

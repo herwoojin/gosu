@@ -9,6 +9,7 @@ import { ChevronRight, FileText, Bell, Repeat } from "lucide-react";
 
 const ROLE_LABEL: Record<Role, string> = {
   OWNER: "경영주", PARTNER: "협력사", ADMIN: "관리자", SUPER_ADMIN: "슈퍼관리자",
+  MENTOR: "멘토", LGU: "지자체", WORKER_GLOBAL: "글로벌워커",
 };
 
 export default function ProfilePage() {
