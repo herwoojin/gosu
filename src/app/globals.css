@@ -144,6 +144,16 @@ body {
     transform: translateX(330%);
   }
 }
+/* 디지털 서명 — 정자체(또렷한 세리프) 표기 */
+.signature-name {
+  font-family: "Times New Roman", "Nanum Myeongjo", serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #1e293b;
+  line-height: 1.1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .splash-img,
   .splash-title,

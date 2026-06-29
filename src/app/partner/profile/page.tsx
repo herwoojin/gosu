@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Card, Badge, Button, Input, Select } from "@/components/ui";
 import { categories } from "@/lib/demo-data";
+import { useAuth } from "@/lib/auth";
+import { biddingDb } from "@/lib/bidding";
+import { catName } from "@/lib/phase2/catalog";
+import type { PartnerRegistration } from "@/types/contract";
 import type { PartnerKind } from "@/types";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Loader2, Upload, Check } from "lucide-react";
+import { ShieldCheck, Loader2, Upload, Check, Briefcase, FileText, Pencil } from "lucide-react";
 
 const KINDS: { kind: PartnerKind; label: string; desc: string }[] = [
   { kind: "corporation", label: "법인사업자", desc: "사업자등록 진위확인" },
@@ -15,6 +20,15 @@ const KINDS: { kind: PartnerKind; label: string; desc: string }[] = [
 ];
 
 export default function PartnerProfile() {
+  const { user } = useAuth();
+  const [reg, setReg] = useState<PartnerRegistration | null>(null);
+  const [completed, setCompleted] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    biddingDb.getRegistration(user.uid).then(setReg);
+    setCompleted(biddingDb.completedJobs(user.uid));
+  }, [user]);
+
   const [kind, setKind] = useState<PartnerKind>("sole_proprietor");
   const [bizNo, setBizNo] = useState("");
   const [verify, setVerify] = useState<"idle" | "loading" | "ok" | "fail">("idle");
@@ -33,7 +47,37 @@ export default function PartnerProfile() {
   const needBiz = kind !== "individual";
 
   return (
-    <AppShell title="협력사 프로필" allow={["PARTNER"]}>
+    <AppShell title="협력사 프로필" allow={["PARTNER", "MENTOR"]}>
+      {/* 등록 정보 + 완료 작업 수 (경영주·본부에 노출되는 신뢰 지표) */}
+      <Card className="mt-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-sm font-bold text-ink">{reg ? reg.companyName : "협력사 정보 미등록"}</div>
+            <div className="mt-0.5 text-xs text-muted">
+              {reg ? `${reg.ownerName} · 업종 ${reg.categoryIds.length} · 경력 ${reg.careers.length}건` : "입찰 전 최초 1회 등록이 필요합니다"}
+            </div>
+          </div>
+          <Link href="/partner/register" className="flex items-center gap-1 text-xs font-semibold text-primary">
+            {reg ? <><Pencil className="h-3.5 w-3.5" /> 수정</> : <><FileText className="h-3.5 w-3.5" /> 등록</>}
+          </Link>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-slate-50 p-3">
+            <div className="flex items-center gap-1 text-xs text-muted"><Briefcase className="h-3.5 w-3.5" /> 이 사이트 완료</div>
+            <div className="mt-1 text-lg font-bold text-ink">{completed}건</div>
+          </div>
+          <div className="rounded-xl bg-slate-50 p-3">
+            <div className="flex items-center gap-1 text-xs text-muted"><ShieldCheck className="h-3.5 w-3.5" /> 사업자 검증</div>
+            <div className="mt-1 text-sm font-bold text-ink">{reg ? (reg.bizVerified ? "확인 완료" : "미확인") : "—"}</div>
+          </div>
+        </div>
+        {reg && reg.categoryIds.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {reg.categoryIds.map((id) => <span key={id} className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-semibold text-primary">{catName(id)}</span>)}
+          </div>
+        )}
+      </Card>
+
       <Card className="mt-3 border border-amber-200 bg-amber-50/40">
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold text-ink">승인 상태</span>

@@ -45,6 +45,15 @@ export default function OwnerHome() {
             <div className="mt-0.5 text-xs text-muted">요청·진행 상태 보기</div>
           </Card>
         </Link>
+        <Link href="/contracts">
+          <Card className="h-full">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary-soft text-primary">
+              <Icons.FileSignature className="h-6 w-6" />
+            </span>
+            <div className="mt-3 text-sm font-bold text-ink">계약·서명</div>
+            <div className="mt-0.5 text-xs text-muted">특약·전자서명 진행</div>
+          </Card>
+        </Link>
       </div>
 
       <SectionTitle>어떤 작업이 필요하세요?</SectionTitle>

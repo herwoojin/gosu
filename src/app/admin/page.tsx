@@ -6,7 +6,7 @@ import { Card } from "@/components/ui";
 import { DiscoverBanner } from "@/components/DiscoverBanner";
 import { useAuth } from "@/lib/auth";
 import { demoPartners, demoRequests } from "@/lib/demo-data";
-import { CheckSquare, Building2, BarChart3, AlertTriangle, ShieldCheck, Users } from "lucide-react";
+import { CheckSquare, Building2, BarChart3, AlertTriangle, ShieldCheck, Users, FileSignature } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     { href: "/admin/payments", label: "본부결제 큐", desc: "승인·기록", icon: Building2 },
     { href: "/admin/pricing", label: "단가 분석", desc: "전국/지방/현재", icon: BarChart3 },
     { href: "/admin/disputes", label: "분쟁 처리", desc: "클레임 관리", icon: AlertTriangle },
+    { href: "/contracts", label: "계약 검토·서명", desc: "특약·전자서명", icon: FileSignature },
   ];
 
   return (
